@@ -2,29 +2,34 @@
 <html>
 <head>
 	<meta charset="utf-8"/>
-	<title>Loomaaed</title>
+	<title>Tellimuste haldus</title>
 	<link rel="stylesheet" type="text/css" href="stiil.css">
 </head>
+
 <body>
+
 <div id="wrap">
 	<ul id="menu">
 		<li><a href="?">Pealeht</a></li>
+		
 		<?php if(isset($_SESSION['user'])): ?>
 			<li><a href="?page=logout">Logi välja</a></li>
-			<?php if($_SESSION['roll']=='admin'): ?>
+			<?php switch($_SESSION['roll']): case 'admin':?>
 				<li><a href="?page=pending">Ootel tellimused</a></li>
 				<li><a href="?page=inprocess">Tellimused komplekteerimises</a></li>
 				<li><a href="?page=processed">Komplekteeritud</a></li>
-			<?php if($_SESSION['roll']=='order processor'): ?>
+			<?php break; case 'order processor': ?>
 				<li><a href="?page=pending">Ootel tellimused</a></li>
 				<li><a href="?page=processed">Komplekteeritud</a></li>
-			<?php if($_SESSION['roll']=='warehouse worker'): ?>
+			<?php break; case 'warehouse worker': ?>
 				<li><a href="?page=inprocess">Tellimused komplekteerimises</a></li>
-			<?php if($_SESSION['roll']=='customer'): ?>	
-				<li><a href="?page=tellimused">Tellimused</a></li>
+			<?php break; case 'customer': ?>	
+				<li><a href="?page=pending">Tellimused</a></li>
 				<li><a href="?page=processed">Komplekteeritud</a></li>
-			<?php endif; ?>
-		<?php else: ?>
+			<?php default: ?>
+				<li><a href="?page=login">Logi sisse</a></li>
+			<?php break; endswitch;?>
+		<?php else: ?>	
 			<li><a href="?page=login">Logi sisse</a></li>
 		<?php endif; ?>
 	</ul>

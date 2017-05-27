@@ -6,6 +6,8 @@ function connect_db(){
 	$host="localhost";
 	$user="test";
 	$pass="t3st3r123";
+	//$user="root";
+	//$pass="";
 	$db="test";
 	$connection = mysqli_connect($host, $user, $pass, $db) or die("ei saa ühendust mootoriga- ".mysqli_error());
 	mysqli_query($connection, "SET CHARACTER SET UTF8") or die("Ei saanud baasi utf-8-sse - ".mysqli_error($connection));
@@ -14,7 +16,7 @@ function connect_db(){
 
 function logi() {	
 	if (isset($_SESSION['user'])) {
-		kuva_puurid();
+		show_orders($_SESSION['roll']);
 	}
 	else {
 		include_once('views/login.html');
@@ -42,7 +44,17 @@ function logi() {
 				$row = mysqli_fetch_assoc($users_result);
 				$_SESSION['user'] = $row["UserName"];
 				$_SESSION['roll'] = $row["Role"];
-				kuva_puurid();
+				switch($row["Role"]) {
+					case 'admin':
+						$status = 'pending';
+					case 'customer':
+						$status = 'pending';
+					case 'order processor':
+						$status = 'pending';
+					case 'warehouse worker':
+						$status = 'in process';
+				}
+				show_orders($status);
 			}else{
 				$errors[] = "Kasutajanimi või parool on vale";
 				include_once('views/login.html');
@@ -58,8 +70,7 @@ function logout(){
 	header("Location: ?");
 }
 
-function ShowOrders() {
-	// siia on vaja funktsionaalsust
+function show_orders($status) {
 	global $connection;
 	if(isset($_SESSION['user'])) {
 		$orders_query ="SELECT * FROM atambek_proj_salesheader";
@@ -68,14 +79,21 @@ function ShowOrders() {
 		while ($order=mysqli_fetch_assoc($orders_result)) {
 			$orders[] = $order;	
 		}
-		include_once('views/puurid.html');
+		switch($status) {
+			case 'pending':
+				header("Location: ?page=pending");
+			case 'inprocess':
+				header("Location: ?page=inprocess");
+			case 'processed':
+				header("Location: ?page=processed");
+		}	
 	}
 	else {
-		include_once('views/login.html');
+		header("Location: ?page=login");
 	}
 }
 
-function addorder() {
+function add_order() {
 	global $connection;
 	if (empty($_SESSION['user'])) {
 		include_once('views/login.html');
