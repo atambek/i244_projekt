@@ -1,0 +1,14 @@
+<form action="?page=addorder" method="POST" enctype="multipart/form-data">
+	<div>
+	
+	</div>
+	<input type="text" name="nimi" placeholder="nimi" value="<?php if (isset($loom['nimi'])) echo htmlspecialchars($loom['nimi']); ?>"/><br/>
+	<input type="number" name="vanus" placeholder="vanus" value="<?php if (isset($loom['vanus'])) echo htmlspecialchars($loom['vanus']); ?>"/><br/>
+	<input type="number" name="puur" placeholder="puur" value="<?php if (isset($loom['puur'])) echo htmlspecialchars($loom['puur']); ?>"/><br/>
+	<input type="submit" value="Kinnita"/> 
+</form>
+<?php if (isset($errors)):?>
+		<?php foreach($errors as $error):?>
+			<div style="color:red;"><?php echo htmlspecialchars($error); ?></div>
+		<?php endforeach;?>
+	<?php endif;?>

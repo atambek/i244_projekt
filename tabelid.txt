@@ -1,0 +1,23 @@
+INSERT INTO `atambek_proj_item` (`ItemNo`, `Description`, `Price`, `PicturePath`) VALUES
+('T-001', 'Toode1', 122.00, 'pics/SmartWatch1_thumb.jpg'),
+('T-002', 'Toode2', 125.00, 'pics/SmartWatch2_thumb.jpg'),
+('T-003', 'Toode3', 234.00, 'pics/SmartWatch3_thumb.jpg'),
+('T-004', 'Toode4', 144.00, 'pics/SmartWatch4_thumb.jpg'),
+('T-005', 'Toode5', 311.00, 'pics/SmartWatch5_thumb.jpg'),
+('T-006', 'Toode6', 188.00, 'pics/SmartWatch6_thumb.jpg'),
+('T-007', 'Toode7', 222.00, 'pics/SmartWatch7_thumb.jpg'),
+('T-008', 'Toode8', 265.00, 'pics/SmartWatch8_thumb.jpg'),
+('T-009', 'Toode9', 199.00, 'pics/SmartWatch9_thumb.jpg'),
+('T-010', 'Toode10', 215.00, 'pics/SmartWatch10_thumb.jpg');
+
+INSERT INTO `atambek_proj_user` (`ID`, `Name`, `UserName`, `Password`, `CustomerNo`, `Role`) VALUES
+(1, 'Tõnu Tõru', 'tonutoru', 'toru', '', 'admin'),
+(2, 'Marko Mõru', 'markomoru', 'moru', '', 'order processor'),
+(3, 'Miina Magus', 'miinamagus', 'magus', '', 'order processor'),
+(4, 'Karmo Kibe', 'karmokibe', 'kibe', '', 'warehouse worker'),
+(5, 'Leida Läila', 'leidalaila', 'laila', '', 'warehouse worker'),
+(6, 'Ilmar Imal', 'ilmarimal', 'imal', 'K-001', 'customer'),
+(7, 'Hannes Hapu', 'hanneshapu', 'hapu', 'K-002', 'customer'),
+(8, 'Timo Terav', 'timoterav', 'terav', 'K-003', 'customer'),
+(9, 'Siim Sool', 'siimsool', 'sool', 'K-004', 'customer'),
+(10, 'Vaido Vürts', 'vaidovurts', 'vurts', 'K-005', 'customer');
