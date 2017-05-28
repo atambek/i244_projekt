@@ -9,11 +9,14 @@ if (isset($_GET['page']) && $_GET['page']!=""){
 	$page=htmlspecialchars($_GET['page']);
 }
 
-include_once('views/head.html');
+include('views/head.html');
 
 switch($page){
 	case "login":
 		logi();
+	break;
+	case "custorders":
+		show_orders('customerorders');
 	break;
 	case "pending":
 		show_orders('pending');
@@ -32,7 +35,6 @@ switch($page){
 	break;
 	default:
 		include_once('views/main.html');
-	break;
 }
 
 include_once('views/foot.html');

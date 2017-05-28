@@ -12,8 +12,10 @@
 	<ul id="menu">
 		<li><a href="?">Pealeht</a></li>
 		
-		<?php if(isset($_SESSION['user'])): ?>
-			<li><a href="?page=logout">Logi välja</a></li>
+		<?php if(empty($_SESSION['user'])): ?>			
+			<li><a href="?page=login">Logi sisse</a></li>
+		<?php else: ?>
+			
 			<?php switch($_SESSION['roll']): case 'admin':?>
 				<li><a href="?page=pending">Ootel tellimused</a></li>
 				<li><a href="?page=inprocess">Tellimused komplekteerimises</a></li>
@@ -23,14 +25,12 @@
 				<li><a href="?page=processed">Komplekteeritud</a></li>
 			<?php break; case 'warehouse worker': ?>
 				<li><a href="?page=inprocess">Tellimused komplekteerimises</a></li>
-			<?php break; case 'customer': ?>	
-				<li><a href="?page=pending">Tellimused</a></li>
+			<?php break; case 'customer': ?>
+				<li><a href="?page=add">Lisa tellimus</a></
 				<li><a href="?page=processed">Komplekteeritud</a></li>
-			<?php default: ?>
-				<li><a href="?page=login">Logi sisse</a></li>
+				<li><a href="?page=custorders">Täitmata tellimused</a></li>
 			<?php break; endswitch;?>
-		<?php else: ?>	
-			<li><a href="?page=login">Logi sisse</a></li>
-		<?php endif; ?>
+			<li><a href="?page=logout">Logi välja</a></li>
+		<?php endif;?>
 	</ul>
 	<div id="content">

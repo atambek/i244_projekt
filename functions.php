@@ -4,10 +4,10 @@ function connect_db(){
 	//Tiia tänav - loomaaia kood >>
 	global $connection;
 	$host="localhost";
-	$user="test";
-	$pass="t3st3r123";
-	//$user="root";
-	//$pass="";
+	//$user="test";
+	//$pass="t3st3r123";
+	$user="root";
+	$pass="";
 	$db="test";
 	$connection = mysqli_connect($host, $user, $pass, $db) or die("ei saa ühendust mootoriga- ".mysqli_error());
 	mysqli_query($connection, "SET CHARACTER SET UTF8") or die("Ei saanud baasi utf-8-sse - ".mysqli_error($connection));
@@ -16,23 +16,23 @@ function connect_db(){
 
 function logi() {	
 	if (isset($_SESSION['user'])) {
-		show_orders($_SESSION['roll']);
+		//show_orders($_SESSION['roll']);
+		//header("Location: ?");
 	}
-	else {
+	else if ($_SERVER['REQUEST_METHOD']=='GET'){
 		include_once('views/login.html');
 	}
 	
-	if ($_SERVER['REQUEST_METHOD']=='GET'){
-		include_once('views/login.html');
-	}
 	if ($_SERVER['REQUEST_METHOD'] == "POST") {
 		if (empty($_POST['user'])) {
 			$errors[] = "Kasutajanimi on puudu!";
 			include_once('views/login.html');
+			break;
 		}
 		else if (empty($_POST['pass'])) {
 			$errors[] = "Parool on puudu!";
 			include_once('views/login.html');
+			break;
 		}
 		else {
 			global $connection;
@@ -44,24 +44,32 @@ function logi() {
 				$row = mysqli_fetch_assoc($users_result);
 				$_SESSION['user'] = $row["UserName"];
 				$_SESSION['roll'] = $row["Role"];
+				include_once('views/head.html');
 				switch($row["Role"]) {
 					case 'admin':
 						$status = 'pending';
+						show_orders($status);
+					break;
 					case 'customer':
-						$status = 'pending';
+						$status = 'customerorders';
+						show_orders($status);
+					break;	
 					case 'order processor':
 						$status = 'pending';
+						show_orders($status);
+					break;
 					case 'warehouse worker':
 						$status = 'in process';
+						show_orders($status);
+					break;
 				}
-				show_orders($status);
+				
 			}else{
 				$errors[] = "Kasutajanimi või parool on vale";
 				include_once('views/login.html');
 			}
 		}
 	}
-	
 }
 
 function logout(){
@@ -73,6 +81,7 @@ function logout(){
 function show_orders($status) {
 	global $connection;
 	if(isset($_SESSION['user'])) {
+		include_once('views/head.html');
 		$orders_query ="SELECT * FROM atambek_proj_salesheader";
 		$orders_result = mysqli_query($connection, $orders_query) or die("$orders_query - ".mysqli_error($connection));
 		$orders = array();
@@ -80,12 +89,20 @@ function show_orders($status) {
 			$orders[] = $order;	
 		}
 		switch($status) {
+			case 'customerorders':
+				include_once('views/customerorders.html');
+				break;
 			case 'pending':
-				header("Location: ?page=pending");
+				include_once('views/orderspending.html');
+				break;
 			case 'inprocess':
-				header("Location: ?page=inprocess");
+				include_once('views/ordersinprocess.html');
+				break;
 			case 'processed':
-				header("Location: ?page=processed");
+				include_once('views/ordersprocessed.html');
+			break;
+			default:
+				include_once('views/orderspending.html');			
 		}	
 	}
 	else {

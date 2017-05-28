@@ -1,0 +1,9 @@
+<form action="?page=processed" method="POST" enctype="multipart/form-data">
+	<div type="text"  value="<?php if (isset($order['OrderNo'])) echo htmlspecialchars($order['OrderNo']); ?>"/><br/>
+	<input type="submit" value="Kinnita"/> 
+</form>
+<?php if (isset($errors)):?>
+		<?php foreach($errors as $error):?>
+			<div style="color:red;"><?php echo htmlspecialchars($error); ?></div>
+		<?php endforeach;?>
+<?php endif;?>

@@ -1,4 +1,12 @@
-<form action="?page=addorder" method="POST" enctype="multipart/form-data">
+<form action="?page=add" method="POST" enctype="multipart/form-data">
+	<div class=container style="width:600px">
+		<h2 align="center">Tooted</h2><br>
+		<?php
+			global $connection;
+			$item_query = "SELECT * FROM atambek_proj_item";
+			$item_result = mysqli_query($connection,$item_query);
+		?>
+	</div>
 	<input type="text" name="nimi" placeholder="nimi" value="<?php if (isset($loom['nimi'])) echo htmlspecialchars($loom['nimi']); ?>"/><br/>
 	<input type="number" name="vanus" placeholder="vanus" value="<?php if (isset($loom['vanus'])) echo htmlspecialchars($loom['vanus']); ?>"/><br/>
 	<input type="number" name="puur" placeholder="puur" value="<?php if (isset($loom['puur'])) echo htmlspecialchars($loom['puur']); ?>"/><br/>
