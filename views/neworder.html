@@ -1,16 +1,34 @@
 <form action="?page=add" method="POST" enctype="multipart/form-data">
-	<div class=container style="width:600px">
+	<div class=container style="width:200px">
 		<h2 align="center">Tooted</h2><br>
 		<?php
 			global $connection;
 			$item_query = "SELECT * FROM atambek_proj_item";
 			$item_result = mysqli_query($connection,$item_query);
+			if (mysqli_num_rows($item_result) > 0) {
+				while ($record = mysqli_fetch_assoc($item_result)) {
+		?>
+				<div class="imgContainer">
+					
+						<div style="border:1px solid #333; background-color:#f1f1f1; border-radius:5px; padding-left:10px;">
+							<br>
+							<img src="<?php echo $record["PicturePath"]; ?>" class="img-responsive" width=150 height=150><br>
+							<p class="text-info"><?php echo $record["Description"]?></p>
+							<p class="text-info"><?php echo $record["ItemNo"]?></p>
+							<p class="text-info"> €<?php echo $record["Price"]?></p>
+							<input type="number" name="Kogus" class="form-control" value="0">
+							<input type="hidden" name="HiddenItemNo" value=<?php echo $record["ItemNo"]?>>
+							<input type="hidden" name="HiddenPrice" value=<?php echo $record["Price"]?>>
+						</div>
+					
+				</div>
+				<br>
+		<?php
+				}
+			}
 		?>
 	</div>
-	<input type="text" name="nimi" placeholder="nimi" value="<?php if (isset($loom['nimi'])) echo htmlspecialchars($loom['nimi']); ?>"/><br/>
-	<input type="number" name="vanus" placeholder="vanus" value="<?php if (isset($loom['vanus'])) echo htmlspecialchars($loom['vanus']); ?>"/><br/>
-	<input type="number" name="puur" placeholder="puur" value="<?php if (isset($loom['puur'])) echo htmlspecialchars($loom['puur']); ?>"/><br/>
-	<input type="submit" value="Kinnita"/> 
+	<input type="submit" value="Kinnita tellimus"/> 
 </form>
 <?php if (isset($errors)):?>
 		<?php foreach($errors as $error):?>
