@@ -4,12 +4,12 @@ function connect_db(){
 	//Tiia tänav - loomaaia kood >>
 	global $connection;
 	$host="localhost";
-	//$user="test";
-	//$pass="t3st3r123";
-	$user="root";
-	$pass="";
+	$user1="test";
+	$pass1="t3st3r123";
+	//$user="root";
+	//$pass="";
 	$db="test";
-	$connection = mysqli_connect($host, $user, $pass, $db) or die("ei saa ühendust mootoriga- ".mysqli_error());
+	$connection = mysqli_connect($host, $user1, $pass1, $db) or die("ei saa ühendust mootoriga- ".mysqli_error());
 	mysqli_query($connection, "SET CHARACTER SET UTF8") or die("Ei saanud baasi utf-8-sse - ".mysqli_error($connection));
 	//Tiia tänav - loomaaia kood <<
 }
@@ -44,8 +44,10 @@ function logi() {
 				$row = mysqli_fetch_assoc($users_result);
 				$_SESSION['user'] = $row["UserName"];
 				$_SESSION['roll'] = $row["Role"];
-				$_SESSION['klient'] = $row["CustomerNo"];
-				include_once('views/head.html');
+				$_SESSION['klient'] = $row["CustomerNo"];				
+				header("get_default()");
+				header("Location: ?");
+				//include_once('views/head.html');
 				switch($row["Role"]) {
 					case 'admin':
 						$status = 'pending';
@@ -60,7 +62,7 @@ function logi() {
 						show_orders($status);
 					break;
 					case 'warehouse worker':
-						$status = 'in process';
+						$status = 'inprocess';
 						show_orders($status);
 					break;
 				}
@@ -83,12 +85,17 @@ function show_orders($status) {
 	global $connection;
 	if(isset($_SESSION['user'])) {
 		include_once('views/head.html');
-		$orders_query ="SELECT * FROM atambek_proj_salesheader";
+		$orders_query ="SELECT DISTINCT(OrderNo) FROM atambek_proj_salesline ORDER BY OrderNo";
 		$orders_result = mysqli_query($connection, $orders_query) or die("$orders_query - ".mysqli_error($connection));
 		$orders = array();
 		while ($order=mysqli_fetch_assoc($orders_result)) {
-			$orders[] = $order;	
+			$lines_query = "SELECT * FROM atambek_proj_salesline WHERE OrderNo = ".mysqli_real_escape_string($connection,$order['OrderNo']);
+			$lines_result = mysqli_query($connection, $lines_query) or die("$lines_query - ".mysqli_error($connection));
+			while ($line=mysqli_fetch_assoc($lines_result)) {
+				$orders[$order['OrderNo']][]=$line;
+			}		
 		}
+	
 		switch($status) {
 			case 'customerorders':
 				include_once('views/customerorders.html');
@@ -101,9 +108,9 @@ function show_orders($status) {
 				break;
 			case 'processed':
 				include_once('views/ordersprocessed.html');
-			break;
+				break;
 			default:
-				include_once('views/orderspending.html');			
+				header("Location: ?page=pending");
 		}	
 	}
 	else {
@@ -122,45 +129,75 @@ function add_order() {
 	}
 	
 	if ($_SERVER['REQUEST_METHOD'] == 'POST') {		
-		$itemno = mysqli_real_escape_string($connection, $_POST['HiddenItemNo']);
-		$qty = mysqli_real_escape_string($connection, $_POST['Kogus']);
-		$price = mysqli_real_escape_string($connection, $_POST['HiddenPrice']);
-		$customer = $_SESSION['klient'];
-		$user = $_SESSION['user'];
-		if (empty($errors)) {
-			$query_cust = "SELECT CustomerName FROM atambek_proj_customer WHERE CustomerNo = '$customer'";
-			$cust_result = mysqli_query($connection, $query_cust);
-			$cust_record = mysqli_fetch_assoc($cust_result);
-			$query_hdr = "INSERT INTO atambek_proj_salesheader (OrderNo, CustomerNo, CustomerName, CreatedBy, Approved) VALUES ('0','$customer','$cust_record[CustomerName]','$user','0')";
-			$result_hdr = mysqli_query($connection, $query_hdr);
-			
-			if (mysqli_insert_id($connection) > 0) {
-				$insertid = mysqli_insert_id($connection);
-				$query_hdr = "SELECT OrderNo FROM atambek_proj_salesheader WHERE OrderNo = '$insertid'";
-				$result_hdr = mysqli_query($connection, $query_hdr);
-				$salesheader = mysqli_fetch_assoc($result_hdr); 
-				$orderno = $salesheader['OrderNo']; 
-				$query_lines = "SELECT MAX(LineNo) as LineNo FROM atambek_proj_salesLine";
-				$result_line = mysqli_query($connection, $query_lines);
-				if (!$query_lines) {
-					$lineno = 0;
-				} else {
-					$row = mysqli_fetch_assoc($result_line);
-					$lineno = $row['LineNo'];
+		$inserted = false;
+		for($i = 0; $i < sizeof($_POST["Kogus"]); $i++) {  
+			//var_dump($_POST['Kogus']);
+			$itemno = mysqli_real_escape_string($connection, $_POST['HiddenItemNo'][$i]);
+			$qty = mysqli_real_escape_string($connection, $_POST['Kogus'][$i]);
+			$price = mysqli_real_escape_string($connection, $_POST['HiddenPrice'][$i]);
+			$customer = $_SESSION['klient'];
+			$user = $_SESSION['user'];
+			if (empty($errors)) {
+				if (($qty != 0)&&(!$inserted)) {
+					$query_cust = "SELECT CustomerName FROM atambek_proj_customer WHERE CustomerNo = '$customer'";
+					$cust_result = mysqli_query($connection, $query_cust);
+					$cust_record = mysqli_fetch_assoc($cust_result);
+					$query_hdr = "INSERT INTO atambek_proj_salesheader (OrderNo, CustomerNo, CustomerName, CreatedBy, Approved) VALUES ('0','$customer','$cust_record[CustomerName]','$user','0')";
+					$result_hdr = mysqli_query($connection, $query_hdr);
+					$insertid = mysqli_insert_id($connection);
+					$inserted = ($insertid > 0);
 				}
-				$lineno++;
-				echo $lineno;
-				echo $orderno;
-				$query_lines = "INSERT INTO atambek_proj_salesline (OrderNo, LineNo, ItemNo, Quantity, Price, PickedQty, OutstandingQty) VALUES ('$orderno', '$lineno', '$itemno','$qty','$price', 0, '$qty')";
-				$result_line = mysqli_query($connection, $query_lines);
-				echo $orderno; 
-				include_once('views/customerorders.html');
-			} else {
-				$errors[]= "Tellimuse loomine ebaõnnestus!";
+				if (($qty !=0)&&$inserted) {
+					$query_hdr = "SELECT OrderNo FROM atambek_proj_salesheader WHERE OrderNo = '$insertid'";
+					$result_hdr = mysqli_query($connection, $query_hdr);
+					$salesheader = mysqli_fetch_assoc($result_hdr); 
+					$orderno = $salesheader['OrderNo']; 
+					$query_lines = "SELECT MAX(LineNo) as LineNo FROM atambek_proj_salesLine";
+					$result_line = mysqli_query($connection, $query_lines);
+					if (!$result_line) {
+						$lineno = 0;
+					} else {
+						$row = mysqli_fetch_assoc($result_line);
+						$lineno = $row['LineNo'];
+					}
+					$lineno++;
+					$query_lines = "INSERT INTO atambek_proj_salesline (OrderNo, LineNo, ItemNo, Quantity, Price, PickedQty, OutstandingQty) VALUES ('$orderno', '$lineno', '$itemno','$qty','$price', 0, '$qty')";
+					$result_line = mysqli_query($connection, $query_lines);
+					//include_once('views/customerorders.html');
+				}
 			}
+			
 		}
-		include_once('views/customerorders.html');
+		if (!$inserted) {
+			$errors[]= "Tellimuse loomine ebaõnnestus!";
+		}		
+		//include_once('views/customerorders.html');
+		show_orders('customerorders');
 	}
 }
-
+function get_default() { 
+	if (empty($_SESSION['user'])) {
+		$page = "?page=pending";
+	} else {
+		$roll = $_SESSION['roll'];
+		switch($roll) {
+			case 'admin':
+				$page = "?page=pending";
+				break;
+			case 'warehouse worker':
+				$page = "?page=inprocess";
+				break;
+			case 'order processor':
+				$page = "?page=pending";
+				break;
+			case 'customer':
+				$page = "?page=custorders";
+				break;
+			default:
+				$page = "?page=pending";
+				break;
+		}
+	}	
+	return $page;
+}
 ?>

@@ -1,6 +1,6 @@
 <form action="?page=add" method="POST" enctype="multipart/form-data">
-	<div class=container style="width:200px">
-		<h2 align="center">Tooted</h2><br>
+	<div class="container" style="width:200px">
+		<h2 align="center">Uue tellimuse loomine</h2><br>
 		<?php
 			global $connection;
 			$item_query = "SELECT * FROM atambek_proj_item";
@@ -16,9 +16,9 @@
 							<p class="text-info"><?php echo $record["Description"]?></p>
 							<p class="text-info"><?php echo $record["ItemNo"]?></p>
 							<p class="text-info"> €<?php echo $record["Price"]?></p>
-							<input type="number" name="Kogus" class="form-control" value="0">
-							<input type="hidden" name="HiddenItemNo" value=<?php echo $record["ItemNo"]?>>
-							<input type="hidden" name="HiddenPrice" value=<?php echo $record["Price"]?>>
+							<input type="number" name="Kogus[]" class="form-control" value="0">
+							<input type="hidden" name="HiddenItemNo[]" value=<?php echo $record["ItemNo"]?>>
+							<input type="hidden" name="HiddenPrice[]" value=<?php echo $record["Price"]?>>
 						</div>
 					
 				</div>

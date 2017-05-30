@@ -16,12 +16,38 @@ body {
 	margin:0px;
 }
 
+div.container {
+	background: rgba(54, 25, 25, .4);
+}
+
+#content {
+  background: 
+    linear-gradient(purple 0%, red 50%), 
+    linear-gradient(to right, purple 0%, yellow 50%), 
+	url('pics/order-processing2.jpg') no-repeat center;
+  background-blend-mode: screen, difference, lighten;
+}
+
 .text-info {
 	font-size: 15px;
 	font-weight: bold;
 	text-shadow: 0px 0px 10px black;
 	color: darkblue;
 }
+
+.text-info2 {
+	font-size: 15px;
+	font-weight: bold;
+	text-shadow: 0px 0px 10px yellow;
+	color: black;
+}
+.big-text-info {
+	font-size: 30px;
+	font-weight: bold;
+	text-shadow: 0px 0px 10px black;
+	color: darkblue;	
+}
+
 #wrap{
 	width: 800px;
 	background: white;
@@ -39,6 +65,10 @@ body {
 #menu li, #menu a {
 	display: inline-block;
 }
+
+#menu li.active {
+	background: orange;
+}
 #menu a {
 	padding:5px 20px;
 	color: black;
@@ -55,21 +85,4 @@ body {
 	margin:auto;
 	width: 35%;	
 	margin-top:25%;
-}
-.puur {
-	border: dashed grey 2px;
-	margin:20px;
-	float:left;
-	width: 40%;
-	padding:10px;
-}
-.puur img {
-	height: 50px;
-
-}
-.puur h5 {
-	margin: 0px;
-}
-.clear {
-	clear:both;
 }
