@@ -1,6 +1,52 @@
 <form action="?page=processed" method="POST" enctype="multipart/form-data">
-	<div type="text"  value="<?php if (isset($order['OrderNo'])) echo htmlspecialchars($order['OrderNo']); ?>"/><br/>
-	<input type="submit" value="Kinnita"/> 
+	<h1 class="big-text-info">Komplekteeritud tellimused</h1>
+	<div class="container">
+		
+		<?php
+		if (empty($orders)) {
+		show_orders('processed');} else {
+			foreach ($orders as $key=>$order):
+		?>
+				<div style="padding-left:30px; padding-top:20px;">
+					<h class="text-info">Tellimus <?php echo $key?></h>
+					<br>
+					<table border="1">
+						<tr>
+							<th class="text-info2">
+								Kauba nr.
+							</th>
+							<th class="text-info2">
+								Kogus
+							</th>
+							<th class="text-info2">
+								Hind
+							</th>
+							<th class="text-info2">
+								Komplekteeritud
+							</th>
+						</tr>
+					<?php foreach ($order as $key2=>$line):?>
+						<tr>
+							<td>
+								<em><?php echo $line['ItemNo'];?></em>
+							</td>
+							<td>
+								<em><?php echo $line['Quantity'];?></em>
+							</td>
+							<td>
+								<em><?php echo $line['Price'];?></</em>
+							</td>
+							<td>
+								<em><?php echo $line['PickedQty'];?></</em>
+							</td>
+						</tr>
+					<?php endforeach; ?>
+					</table>
+				</div>
+				<br>
+				</container>
+			<?php endforeach; }?>	
+	</div>
 </form>
 <?php if (isset($errors)):?>
 		<?php foreach($errors as $error):?>
