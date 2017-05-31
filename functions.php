@@ -4,12 +4,12 @@ function connect_db(){
 	//Tiia tänav - loomaaia kood >>
 	global $connection;
 	$host="localhost";
-	$user1="test";
-	$pass1="t3st3r123";
+	$user="test";
+	$pass="t3st3r123";
 	//$user="root";
 	//$pass="";
 	$db="test";
-	$connection = mysqli_connect($host, $user1, $pass1, $db) or die("ei saa ühendust mootoriga- ".mysqli_error());
+	$connection = mysqli_connect($host, $user, $pass, $db) or die("ei saa ühendust mootoriga- ".mysqli_error());
 	mysqli_query($connection, "SET CHARACTER SET UTF8") or die("Ei saanud baasi utf-8-sse - ".mysqli_error($connection));
 	//Tiia tänav - loomaaia kood <<
 }
@@ -84,36 +84,42 @@ function logout(){
 function show_orders($status) {
 	global $connection;
 	if(isset($_SESSION['user'])) {
-		include_once('views/head.html');
-		$orders_query ="SELECT DISTINCT(OrderNo) FROM atambek_proj_salesline ORDER BY OrderNo";
-		$orders_result = mysqli_query($connection, $orders_query) or die("$orders_query - ".mysqli_error($connection));
-		$orders = array();
-		while ($order=mysqli_fetch_assoc($orders_result)) {
-			$lines_query = "SELECT * FROM atambek_proj_salesline WHERE OrderNo = ".mysqli_real_escape_string($connection,$order['OrderNo']);
-			$lines_result = mysqli_query($connection, $lines_query) or die("$lines_query - ".mysqli_error($connection));
-			while ($line=mysqli_fetch_assoc($lines_result)) {
-				$orders[$order['OrderNo']][]=$line;
-			}		
-		}
-	
-		switch($status) {
-			case 'customerorders':
-				include_once('views/customerorders.html');
-				break;
-			case 'pending':
-				include_once('views/orderspending.html');
-				break;
-			case 'inprocess':
-				include_once('views/ordersinprocess.html');
-				break;
-			case 'processed':
-				include_once('views/ordersprocessed.html');
-				break;
-			default:
-				header("Location: ?page=pending");
-		}	
-	}
-	else {
+	//	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+	//		if ($status=='pending') {
+	//			approve_order();
+	//		}
+	//	} else {
+		
+			include_once('views/head.html');
+			$orders_query ="SELECT DISTINCT(OrderNo) FROM atambek_proj_salesline ORDER BY OrderNo";
+			$orders_result = mysqli_query($connection, $orders_query) or die("$orders_query - ".mysqli_error($connection));
+			$orders = array();
+			while ($order=mysqli_fetch_assoc($orders_result)) {
+				$lines_query = "SELECT * FROM atambek_proj_salesline WHERE OrderNo = ".mysqli_real_escape_string($connection,$order['OrderNo']);
+				$lines_result = mysqli_query($connection, $lines_query) or die("$lines_query - ".mysqli_error($connection));
+				while ($line=mysqli_fetch_assoc($lines_result)) {
+					$orders[$order['OrderNo']][]=$line;
+				}		
+			}
+		
+			switch($status) {
+				case 'customerorders':
+					include_once('views/customerorders.html');
+					break;
+				case 'pending':
+					include_once('views/orderspending.html');
+					break;
+				case 'inprocess':
+					include_once('views/ordersinprocess.html');
+					break;
+				case 'processed':
+					include_once('views/ordersprocessed.html');
+					break;
+				default:
+					header("Location: ?page=pending");
+			}
+		//}
+	} else {
 		header("Location: ?page=login");
 	}
 }
@@ -160,9 +166,11 @@ function add_order() {
 						$row = mysqli_fetch_assoc($result_line);
 						$lineno = $row['LineNo'];
 					}
-					$lineno++;
+					//$lineno++;
 					$query_lines = "INSERT INTO atambek_proj_salesline (OrderNo, LineNo, ItemNo, Quantity, Price, PickedQty, OutstandingQty) VALUES ('$orderno', '$lineno', '$itemno','$qty','$price', 0, '$qty')";
 					$result_line = mysqli_query($connection, $query_lines);
+					if (mysqli_insert_id($connection) == 0)
+						echo mysqli_error($connection);
 					//include_once('views/customerorders.html');
 				}
 			}
@@ -173,7 +181,35 @@ function add_order() {
 		}		
 		//include_once('views/customerorders.html');
 		show_orders('customerorders');
+		
 	}
+}
+
+function approve_order () {
+	global $connection;
+	if (empty($_SESSION['user'])) {
+		include_once('views/login.html');
+	}
+	
+	if ($_SERVER['REQUEST_METHOD']=='GET'){
+		include_once('views/orderspending.html');
+	}
+	
+	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+		for($i = 0; $i < sizeof($_POST['Approved']); $i++) {
+			if (mysqli_real_escape_string($connection, $_POST['Approved'][$i]) == 1) {
+				$orderno = mysqli_real_escape_string($connection, $_POST['HiddenOrderNo'][$i]);
+				$query = "UPDATE atambek_proj_salesheader SET Approved=1 WHERE OrderNo='$orderno'";
+				$result = mysqli_query($connection, $query);
+				if (mysqli_affected_rows($connection) == 0) {
+					$errors[] = "Rida ei õnnestunud uuendada!";
+				}
+			}
+		}
+		//include_once('views/orderspending.html');
+		//show_orders('pending');
+		header("Location: ?");
+	}		
 }
 function get_default() { 
 	if (empty($_SESSION['user'])) {
