@@ -22,5 +22,18 @@ Protsessid ja rollid:
  - tellimuse kinnitamine --> tellimusehaldur
  - komplekteerimine --> laotöötaja
  
- Vaated:
+Rollide vaated:
+ - klient
+	* saab lisada uusi tellimusi
+	* saab vaadata täitamata tellimusi
+	* saab vaadata komplekteeritud tellimusi
+- admin
+	* saab vaadata ootel tellimusi ja neid kinnitada
+	* saab vaadata komplekteerimises olevaid tellimusi
+	* saab vaadata komplekteeritud tellimusi
+- tellimusehaldur
+	* saab vaadata kliendi lisatud tellimusi ja neid kinnitada (s.t komplekteerimisele saata)
+	* saab vaadata komplekteeritud tellimusi
+- laotöötaja
+	* saab vaadata tellimusehalduri poolt kinnitatud e. komplekteerimisele saadetud tellimusi
  
