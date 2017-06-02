@@ -24,6 +24,9 @@
 							<th class="text-info2">
 								Komplekteeritud
 							</th>
+							<th class="text-info2">
+								Täitmata kogus
+							</th>
 						</tr>
 					<?php foreach ($order as $key2=>$line):?>
 						<tr>
@@ -34,12 +37,18 @@
 								<em><?php echo $line['Quantity'];?></em>
 							</td>
 							<td>
-								<em><?php echo $line['Price'];?></</em>
+								<em><?php echo $line['Price'];?></em>
 							</td>
 							<td>
-								<em><?php echo $line['PickedQty'];?></</em>
+								<input type="number" max="<?php echo $line['Quantity'];?>" min="0" name="PickedQty[]" value="<?php if (isset($line['PickedQty'])) echo htmlspecialchars($line['PickedQty']); ?>"></input>
+							</td>
+							<td>
+								<em><?php echo $line['OutstandingQty'];?></em>
 							</td>
 						</tr>
+						<input type="hidden" name="OutstandingQty[]" value="<?php echo $line['OutstandingQty'] ?>"></input>
+						<input type="hidden" name="OrderNo[]" value="<?php echo $line['OrderNo'] ?>"></input>
+						<input type="hidden" name="LineNo[]" value="<?php echo $line['LineNo'] ?>"></input>
 					<?php endforeach; ?>
 					</table>
 				</div>
