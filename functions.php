@@ -125,7 +125,10 @@ function show_orders($status) {
 			switch($status) {
 				case 'inprocess':
 					$lines_query = "SELECT * FROM atambek_proj_salesline WHERE OutstandingQty > 0 AND OrderNo = ".mysqli_real_escape_string($connection,$order['OrderNo']); 
-				break;
+					break;
+				case 'processed':
+					$lines_query = "SELECT * FROM atambek_proj_salesline WHERE OutstandingQty = 0 AND OrderNo = ".mysqli_real_escape_string($connection,$order['OrderNo']);
+					break;
 				default:
 					$lines_query = "SELECT * FROM atambek_proj_salesline WHERE OrderNo = ".mysqli_real_escape_string($connection,$order['OrderNo']);
 			}
